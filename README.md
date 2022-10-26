@@ -5,7 +5,7 @@
 <h1 align="center">python-cli-generator</h2>
 
   <p align="center">
-    A library that automatically generates a Python CLI given a class, a function, a list or a dictionary.
+    A Python library that automatically generates a CLI given a class, a function, a list or a dictionary.
     <br />
     <br />
  <div align="center">
@@ -34,10 +34,10 @@
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#install-required-python-dependencies">Install required python dependencies</a></li>
+        <!-- <li><a href="#install-required-python-dependencies">Install required python dependencies</a></li> -->
       </ul>
     </li>
-    <li>
+    <!-- <li> -->
 	<!-- <a href="#usage">Usage</a>
 	<ul>
         <li><a href="#parameters">Parameters</a></li>

@@ -25,7 +25,6 @@ class CliBuiltin:
                  builtin_search_argument: bool = True,
                  builtin_full_help_argument: bool = False,
                  builtin_verbose_argument: bool = True,
-                 logger = None,
                  output_processor = None,
                  cli_generator=None):
 
@@ -36,7 +35,6 @@ class CliBuiltin:
         self.builtin_verbose_argument = builtin_verbose_argument
         self._output_processor = output_processor
         self._cli_generator = cli_generator
-        self.logger = logger
 
 
     def _is_in_sys_argv(self,args):

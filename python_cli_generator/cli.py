@@ -52,7 +52,6 @@ class Cli():
             builtin_search_argument,
             builtin_full_help_argument,
             builtin_verbose_argument,
-            logger=logger,
             output_processor=self._output_processor,
             cli_generator=self._cli_generator
         )
