@@ -7,7 +7,7 @@ def read(fname):
     
 setup(
     name="python-cli-generator",
-    version="0.3",
+    version="0.1",
     author="Alejandro Suárez",
     author_email="alejandrosuarez.eu@gmail.com",
     description=(
