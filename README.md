@@ -51,7 +51,7 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-A library that allows rapid creation of a CLI by automatically reading the attributes and parameters inside a class and generating its corresponding Command Line Interface.
+A library that allows a rapid creation of a CLI by automatically reading the attributes and parameters inside a class and generating its corresponding Command Line Interface.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
