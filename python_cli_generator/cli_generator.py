@@ -316,10 +316,12 @@ class CliGenerator:
         class_doc = class_instance.__doc__.split(
             "\n")[0] if class_instance.__doc__ else None
 
+        DEFAULT_METHOD_NAME = "_default"
+        has_default_method = hasattr(class_instance,DEFAULT_METHOD_NAME)
         
         parser, subparsers = self.create_subparser(parser, subparser_name, class_doc,
-                                                   multiple_positionals=parameter_kind is None
-                                                   )
+                                                    multiple_positionals=parameter_kind is None and not has_default_method,
+                                                    )
 
         functionParameter = False
         if parameter_kind is not None:
@@ -349,7 +351,7 @@ class CliGenerator:
         for member_name, member in class_members_list:
             if (
                 (member_list_allowed != None and member_name not in member_list_allowed)
-                or member_name.startswith("_")
+                or (member_name.startswith("_") and member_name!=DEFAULT_METHOD_NAME)
             ):
                 continue
 
@@ -375,8 +377,11 @@ class CliGenerator:
             if (inspect.ismethod(member) or inspect.isfunction(member)) and not functionParameter:
                 reserved_short_arguments_per_method = copy.copy(
                     reserved_short_arguments)
-                function_subparser = subparsers.add_parser(
-                    parameter_metavar, help=doc, allow_abbrev=False)
+                
+                function_subparser = parser
+                if not has_default_method:
+                    function_subparser = subparsers.add_parser(
+                        parameter_metavar, help=doc, allow_abbrev=False)
                 self.generate_arguments_from_function(
                     function_subparser, member, builtin_options=builtin_options, reserved_short_arguments=reserved_short_arguments_per_method)
 
