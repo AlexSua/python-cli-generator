@@ -40,8 +40,8 @@
     <li>
 	<a href="#usage">Usage</a>
 	<ul>
-        <li><a href="#get-spotify-playlist">Get Spotify playlist</a></li>
-        <li><a href="#get-youtube-playlist/element">Get youtube playlist/element</a></li>
+        <li><a href="#parameters">Parameters</a></li>
+        <li><a href="#get-youtube-playlist/element">Options</a></li>
       </ul>
 	</li>
     <li><a href="#contact">Contact</a></li>
