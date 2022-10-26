@@ -26,7 +26,7 @@ class Cli():
                  builtin_output_processing: bool = True,
                  builtin_format: str = "json",
                  builtin_search_argument: bool = True,
-                 builtin_full_help_argument: bool = True,
+                 builtin_full_help_argument: bool = False,
                  builtin_verbose_argument: bool = True,
 
                  logger: argparse.ArgumentParser = None,
@@ -140,10 +140,9 @@ class Cli():
         self._output_processor.process_args(args)
         for class_instance in self._class_instances:
             parsing_processor.set_args_into_class(args, class_instance)
-
-        self._args = args.get("func_args", {})
-
-        return (self._command, self._args)
+        self._args = args
+        return args
 
     def execute_command(self):
-        return self._command(**self._args)
+        func_args = self._args.get("func_args", {})
+        return self._command(**func_args)

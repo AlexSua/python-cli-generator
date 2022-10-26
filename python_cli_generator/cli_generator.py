@@ -344,7 +344,7 @@ class CliGenerator:
         for class_hint, _ in class_hints.items():
             if not hasattr(class_instance, class_hint):
                 class_members_list.append(
-                    (class_hint, inspect._empty ))
+                    (class_hint, inspect._empty if parameter_kind else None ))
 
         for member_name, member in class_members_list:
             if (
@@ -358,7 +358,11 @@ class CliGenerator:
             if member.__doc__ is not None:
                 doc = member.__doc__.split("\n")[0]
 
-            destname = class_instance.__class__.__name__ + "." + member_name
+            if  not class_instance.__class__.__name__ == "type":
+                destname = class_instance.__class__.__name__ + "." + member_name
+            else:
+                destname = class_instance.__name__ + "." + member_name
+
             if destination_name is not None:
                 destname = destination_name + "." + member_name
 
@@ -367,8 +371,8 @@ class CliGenerator:
                 parameter_metavar = parameter_metavar[1]
             else:
                 parameter_metavar = parameter_metavar[0]
-
-            if inspect.ismethod(member) and not functionParameter:
+            
+            if (inspect.ismethod(member) or inspect.isfunction(member)) and not functionParameter:
                 reserved_short_arguments_per_method = copy.copy(
                     reserved_short_arguments)
                 function_subparser = subparsers.add_parser(

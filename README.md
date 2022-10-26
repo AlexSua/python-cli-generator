@@ -5,7 +5,7 @@
 <h1 align="center">python-cli-generator</h2>
 
   <p align="center">
-    A library that automatically generates a Python CLI from a Class.
+    A library that automatically generates a Python CLI given a class, a function, a list or a dictionary.
     <br />
     <br />
  <div align="center">
@@ -38,13 +38,13 @@
       </ul>
     </li>
     <li>
-	<a href="#usage">Usage</a>
+	<!-- <a href="#usage">Usage</a>
 	<ul>
         <li><a href="#parameters">Parameters</a></li>
         <li><a href="#get-youtube-playlist/element">Options</a></li>
       </ul>
 	</li>
-    <li><a href="#contact">Contact</a></li>
+    <li><a href="#contact">Contact</a></li> -->
   </ol>
 </details>
 </br>
@@ -58,9 +58,10 @@ A library that allows rapid creation of a CLI by automatically reading the attri
 ## Getting Started
 ### Prerequisites
 
-Before using the application you need to have installed [python](https://www.python.org/) and the package manager of Python, [pip](https://pip.pypa.io/en/stable/installation/). You can get instructions on how to install both requirements by following the links shown before.
+Before using the application you need to have installed [python](https://www.python.org/). You can get instructions on how to install it by following the links shown before.
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Execute examples
+<!-- ### Execute examples
 
 To get the script working you need to follow the steps shown below.
 
@@ -96,7 +97,7 @@ You can check the documentation of the script by typing:
 ### Parameters
 
 
-### Options
+### Options -->
 
 ## Contact
 

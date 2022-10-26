@@ -74,7 +74,7 @@ class OutputProcessor:
 
     def _process_result(self, result):
         if self.logger is not False:
-            self.logger.info("Result: {}\n".format(result))
+            self.logger.debug("Result: {}\n".format(result))
         if not isinstance(result, dict) and not isinstance(result, list):
             return {"result": result}
         self._print_result(result)

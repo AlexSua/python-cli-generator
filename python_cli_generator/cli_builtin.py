@@ -53,26 +53,27 @@ class CliBuiltin:
                 setattr(self, key, value)
 
     def generate_full_help_argument(self, parser, reserved_short_arguments: set[str]):
-        short_arg_name = "fh"
-        parameter_name = "full_help"
-        doc = "Print all hidden optionals"
-        args = ["-"+short_arg_name,"--"+short_arg_name, "--"+parameter_name]
-        if short_arg_name not in reserved_short_arguments:
-            self._cli_generator.create_parameter_argument(
-                parser,
-                parameter_name=parameter_name,
-                parameter_type=bool,
-                parameter_default=None,
-                parameter_kind=None,
-                parameter_doc=doc,
-                parameter_destination=parameter_name,
-                parameter_metavar=parameter_name,
-                reserved_short_arguments=reserved_short_arguments,
-                builtin_options=None,
-            )
+        if self.builtin_full_help_argument:
+            short_arg_name = "fh"
+            parameter_name = "full_help"
+            doc = "Print all hidden optionals"
+            args = ["-"+short_arg_name,"--"+short_arg_name, "--"+parameter_name]
+            if short_arg_name not in reserved_short_arguments:
+                self._cli_generator.create_parameter_argument(
+                    parser,
+                    parameter_name=parameter_name,
+                    parameter_type=bool,
+                    parameter_default=None,
+                    parameter_kind=None,
+                    parameter_doc=doc,
+                    parameter_destination=parameter_name,
+                    parameter_metavar=parameter_name,
+                    reserved_short_arguments=reserved_short_arguments,
+                    builtin_options=None,
+                )
 
-            if self._is_in_sys_argv(args):
-                self.builtin_full_help_argument=False
+                if self._is_in_sys_argv(args):
+                    self.builtin_full_help_argument=False
 
     def generate_verbose_argument(self, parser, reserved_short_arguments: set[str]):
         parameter_name = "verbose"
