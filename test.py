@@ -3,6 +3,14 @@
 
 from python_cli_generator.cli import Cli
 
+class ParameterInParameterClass:
+    parameter_in_parametr_test1 = ""
+
+    def __init__(self,parameter_in_parameter_constructor_test):
+        print(parameter_in_parameter_constructor_test)
+
+
+
 class ParameterTest:
     """Parameter test class
     parameter_test_required (str): required parameter parameter_test_required
@@ -11,6 +19,9 @@ class ParameterTest:
     """    
     parameter_test_required:str
     parameter_test_optional:str = ""
+
+    def __init__(self,constructor_test,parameter_test_class:ParameterInParameterClass):
+        print(constructor_test)
 
 class Test:
     """Test class
@@ -24,7 +35,7 @@ class Test:
         self.test_1 =  "test1"
         self.test_2 =  "test2"
 
-    def method1(self, test3, test4="test4", **test5:ParameterTest):
+    def method1(self, test3,test5:ParameterTest, test4="test4", ):
         """A method1 example
 
         Args:
@@ -40,7 +51,7 @@ class Test:
         ]
     
 
-cli = Cli( )
+cli = Cli()
 cli.generate_arguments(Test())
 cli.parse()
 cli.execute_command()

@@ -37,14 +37,14 @@
         <!-- <li><a href="#install-required-python-dependencies">Install required python dependencies</a></li> -->
       </ul>
     </li>
-    <!-- <li> -->
-	<!-- <a href="#usage">Usage</a>
+    <li>
+	<a href="#usage">Usage</a>
 	<ul>
         <li><a href="#parameters">Parameters</a></li>
         <li><a href="#get-youtube-playlist/element">Options</a></li>
       </ul>
 	</li>
-    <li><a href="#contact">Contact</a></li> -->
+    <li><a href="#contact">Contact</a></li>
   </ol>
 </details>
 </br>

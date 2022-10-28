@@ -11,6 +11,7 @@ from python_cli_generator.cli_builtin import CliBuiltin
 
 from python_cli_generator.parsing_processor import validate_json
 
+
 class CliGenerator:
 
     def __init__(self, func_decorator: FunctionType = None):
@@ -65,7 +66,8 @@ class CliGenerator:
             choices_parameter = parameter_default.__class__
         setattr(choices_parameter, "__str__", __str__)
         arguments[1]["choices"] = list(choices_parameter)
-        if "metavar" in arguments[1]: del arguments[1]["metavar"]
+        if "metavar" in arguments[1]:
+            del arguments[1]["metavar"]
 
     def _process_datetime(self, arguments, parameter_default):
         if parameter_default == None:
@@ -105,7 +107,7 @@ class CliGenerator:
 
         self.generate_arguments_from_class(
             class_instance=parameter_default if parameter_default is not None and parameter_default is not inspect._empty else parameter_type,
-            subparser_name= parameter_name if parameter_kind is not None else None,
+            subparser_name=parameter_name if parameter_kind is not None else None,
             parameter_kind=parameter_kind,
             **options
         )
@@ -236,7 +238,7 @@ class CliGenerator:
                 self._print_argparse_arguments(arguments)
             parser.add_argument(*arguments[0], **arguments[1])
 
-    def generate_arguments_from_function(self, parser, function, builtin_options=None, reserved_short_arguments=None, subparser_name=None):
+    def generate_arguments_from_function(self, parser, function, builtin_options=None, reserved_short_arguments=None, subparser_name=None, parameter_destination="func_args.", is_constructor=False):
         doc = function.__doc__
         function_doc = doc.split("\n")[0] if doc is not None else doc
 
@@ -250,29 +252,34 @@ class CliGenerator:
             builtin_options = copy.copy(builtin_options)
 
         builtin_options.builtin_full_help_argument = False
-        parser_function = function
 
-        if self.func_decorator:
-            parser_function = self.func_decorator(function)
+        if not is_constructor:
+            parser_function = function
 
-        if builtin_options.builtin_output_processing:
-            parser_function = builtin_options.function_output_decorator(
-                function)
+            if self.func_decorator:
+                parser_function = self.func_decorator(function)
 
-        parser.set_defaults(func=parser_function)
+            if builtin_options.builtin_output_processing:
+                parser_function = builtin_options.function_output_decorator(
+                    function)
 
-        builtin_options.generate_format_argument(
-            parser, reserved_short_arguments)
-        builtin_options.generate_verbose_argument(
-            parser, reserved_short_arguments)
-        builtin_options.generate_search_argument(
-            parser, reserved_short_arguments)
-        builtin_options.generate_attribute_list_filter_argument(
-            parser, reserved_short_arguments)
+            parser.set_defaults(func=parser_function)
+            builtin_options.generate_format_argument(
+                parser, reserved_short_arguments)
+            builtin_options.generate_verbose_argument(
+                parser, reserved_short_arguments)
+            builtin_options.generate_search_argument(
+                parser, reserved_short_arguments)
+            builtin_options.generate_attribute_list_filter_argument(
+                parser, reserved_short_arguments)
 
         signature = inspect.signature(function)
         for parameter in signature.parameters:
             parameter_value = signature.parameters[parameter]
+            if (parameter == "self"
+                or (is_constructor and parameter == "args" and parameter_value.VAR_KEYWORD == 4)
+                    or (is_constructor and parameter == "kwargs" and parameter_value.VAR_KEYWORD == 4)):
+                continue
 
             if doc is not None:
                 docArr = function.__doc__.split(
@@ -289,7 +296,7 @@ class CliGenerator:
                 parameter_default=parameter_value.default,
                 parameter_kind=parameter_value.kind,
                 parameter_doc=doc,
-                parameter_destination="func_args."+parameter,
+                parameter_destination=parameter_destination+parameter,
                 parameter_metavar=parameter,
                 reserved_short_arguments=reserved_short_arguments,
                 builtin_options=builtin_options,
@@ -317,17 +324,26 @@ class CliGenerator:
             "\n")[0] if class_instance.__doc__ else None
 
         DEFAULT_METHOD_NAME = "_default"
-        has_default_method = hasattr(class_instance,DEFAULT_METHOD_NAME)
-        
+        has_default_method = hasattr(class_instance, DEFAULT_METHOD_NAME)
+
         parser, subparsers = self.create_subparser(parser, subparser_name, class_doc,
-                                                    multiple_positionals=parameter_kind is None and not has_default_method,
-                                                    )
+                                                   multiple_positionals=parameter_kind is None and not has_default_method,
+                                                   )
+
+        if destination_name is None:
+            if not class_instance.__class__.__name__ == "type":
+                destination_name = class_instance.__class__.__name__
+            else:
+                destination_name = class_instance.__name__
 
         functionParameter = False
         if parameter_kind is not None:
             functionParameter = True
             if parameter_kind is not inspect._ParameterKind.VAR_KEYWORD:
-                parser, subparsers  = self.create_subparser(parser,subparser_name, add_subparsers=False )
+                parameter_constructor_destination = destination_name + "."+"constructor."
+                self.generate_arguments_from_function(parser, class_instance.__init__, builtin_options, reserved_short_arguments,
+                                                      parameter_destination=parameter_constructor_destination, is_constructor=True)
+                # parser, subparsers  = self.create_subparser(parser,subparser_name, add_subparsers=False,parameter_destination= )
                 parameter_kind = inspect._ParameterKind.VAR_KEYWORD
 
         builtin_options.generate_full_help_argument(
@@ -346,12 +362,12 @@ class CliGenerator:
         for class_hint, _ in class_hints.items():
             if not hasattr(class_instance, class_hint):
                 class_members_list.append(
-                    (class_hint, inspect._empty if parameter_kind else None ))
+                    (class_hint, inspect._empty if parameter_kind else None))
 
         for member_name, member in class_members_list:
             if (
                 (member_list_allowed != None and member_name not in member_list_allowed)
-                or (member_name.startswith("_") and member_name!=DEFAULT_METHOD_NAME)
+                or (member_name.startswith("_") and member_name != DEFAULT_METHOD_NAME)
             ):
                 continue
 
@@ -360,24 +376,18 @@ class CliGenerator:
             if member.__doc__ is not None:
                 doc = member.__doc__.split("\n")[0]
 
-            if  not class_instance.__class__.__name__ == "type":
-                destname = class_instance.__class__.__name__ + "." + member_name
-            else:
-                destname = class_instance.__name__ + "." + member_name
+            parameter_destination = destination_name + "." + member_name
 
-            if destination_name is not None:
-                destname = destination_name + "." + member_name
-
-            parameter_metavar = destname.split(".", 1)
+            parameter_metavar = parameter_destination.split(".", 1)
             if len(parameter_metavar) > 1:
                 parameter_metavar = parameter_metavar[1]
             else:
                 parameter_metavar = parameter_metavar[0]
-            
+
             if (inspect.ismethod(member) or inspect.isfunction(member)) and not functionParameter:
                 reserved_short_arguments_per_method = copy.copy(
                     reserved_short_arguments)
-                
+
                 function_subparser = parser
                 if not has_default_method:
                     function_subparser = subparsers.add_parser(
@@ -404,7 +414,7 @@ class CliGenerator:
                     parameter_default=member,
                     parameter_kind=parameter_kind,
                     parameter_doc=doc,
-                    parameter_destination=destname,
+                    parameter_destination=parameter_destination,
                     parameter_metavar=parameter_metavar,
                     reserved_short_arguments=reserved_short_arguments,
                     builtin_options=builtin_options
