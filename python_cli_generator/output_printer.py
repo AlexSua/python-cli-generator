@@ -41,7 +41,8 @@ def print_format_table(json_list, title = None, filtered_attributes = None):
         line = line + "|"
         underline = underline+"+"
         max_line_size = len(line)
-        print("+{title:-^{width}}+".format(title=" {} ".format(title).upper(), width=max_line_size-2))
+        # print("+{title:-^{width}}+".format(title=" {} ".format(title).upper(), width=max_line_size-2))
+        print("+{title:-^{width}}+".format(title="", width=max_line_size-2))
         print(line)
         print("{}".format(underline))
         for json_el in json_list:
@@ -65,7 +66,7 @@ def print_json_value( json_value, title=None, filtered_attributes=None, output_f
     elif isinstance(json_value, list) and len(json_value)==0:
         pass
     else:
-        if output_format is None or output_format =="table":
+        if output_format is None or output_format in ["table","csv"]:
             output_format="json"
 
     print_functions = {
