@@ -11,6 +11,8 @@ import python_cli_generator.parsing_processor as parsing_processor
 
 class Cli():
     _class_instances = []
+    _store = {}
+
     _reserved_short_arguments: set
 
     default_command_list_name: str
@@ -45,10 +47,11 @@ class Cli():
         self._command = None
         self._args = None
         self._reserved_short_arguments = set()
+        self._store= {}
         self.__init_parser(cli_description)
         self.__init_logger(logger_format, logger_default_level)
         self._output_processor = OutputProcessor(self.logger)
-        self._cli_generator = CliGenerator(self.function_decorator)
+        self._cli_generator = CliGenerator(self.function_decorator,self._store)
         self._cli_builtin = CliBuiltin(
             builtin_output_processing,
             builtin_format,
@@ -145,7 +148,7 @@ class Cli():
     def parse(self):
         args = self.parser.parse_args()
         self._command = args.func
-        args = parsing_processor.process_parsed_arguments(args)
+        args = parsing_processor.process_parsed_arguments(args,self._store)
         self._output_processor.process_args(args)
         for class_instance in self._class_instances:
             parsing_processor.set_args_into_class(args, class_instance)

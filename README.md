@@ -2,7 +2,7 @@
 <!-- PROJECT LOGO -->
 <div align="center">
 
-<h1 align="center">python-cli-generator</h2>
+<h1 align="center">python-cli-generator</h1>
 
   <p align="center">
     A Python library that automatically generates a CLI given a class, a function or a list of classes.
@@ -40,8 +40,9 @@
     <li>
 	<a href="#usage">Usage</a>
 	<ul>
-        <li><a href="#parameters">Parameters</a></li>
-        <li><a href="#get-youtube-playlist/element">Options</a></li>
+        <li><a href="#import-the-library"> Import the library</a></li>
+        <li><a href="#create-input-classes">Create input classes</a></li>
+        <li><a href="#generate-cli">Generate CLI</a></li>
       </ul>
 	</li>
     <li><a href="#contact">Contact</a></li>
@@ -80,13 +81,21 @@ pip3 install git+https://github.com/AlexSua/python-cli-generator.git
 
 
 ## Usage
+</br>
+
+### Import the library
+Import the controller class "Cli" that contains the main functionality for initializing the generation process.
 
 ```Python
-from datetime import datetime
-from typing import List
 from python_cli_generator import Cli
+```
 
+</br>
 
+### Create input classes
+Create the classes the generator will use to generate the Command line interface.
+> Notice that comments are as well parsed and automatically added to the CLI.
+```Python
 class ParameterTest:
     """Parameter test class
     parameter_test_required (str): required parameter parameter_test_attr1
@@ -189,8 +198,14 @@ def test(x: str):
     """    
     print(x)
 
+```
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
+### Generate CLI
+The following code shows how to generate the CLI given the classes created above.
+
+```python
 options = {
     "builtin_output_processing": True,
     "builtin_format": "json",
@@ -208,23 +223,23 @@ generate_arguments_options = {
     "builtin_class_functions_generator": False
 }
 
-# Create CLI class with the selected configuratio.
+# Create CLI class with the selected configuration.
 cli = Cli(**options)
 
 # Generate CLI arguments for Test class
 cli.generate_arguments(Test())
 
-# Geberate CLI arguments for the following dictionary.
+# Generate CLI arguments for the following dictionary.
 cli.generate_arguments({
     "subcommand1": (Test1()),
     "subcommand2": [test, (Test2(), generate_arguments_options)],
     "subcommand3": (Test3()),
 })
 
-# Obtain the arguments that are introduced in the cli as a dictionary.
+# Obtain the arguments that are going to be introduced in the CLI as a dictionary.
 args = cli.parse()
 
-# Execute the selected command in the cli. 
+# Execute the selected command in the CLI. 
 # If no arguments are introduced the function 
 # you select in the CLI will be executed with 
 # the arguments you have introduced in the CLI.
@@ -232,50 +247,30 @@ cli.execute_command()
 
 ```
 
-</br>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Options
+## Roadmap
+* [x] Added options to disable/enable class attributes arguments generation.
+* [x] Support for class with non empty constructors.
 
-
-
-
-<!-- ### Execute examples
-
-To get the script working you need to follow the steps shown below.
-
-1. Clone the repo
-
-   ```bash
-   git clone https://github.com/AlexSua/python-cli-generator.git
-   ```
-
-2. Enter the project directory:
-
-   ```bash
-   cd python-cli-generator
-   ```
-
-3. Install python dependencies by executing the following command.
-
-   ```bash
-   pip3 install -r requirements.txt
-   ```
-
-With the steps mentioned above, you should be ready to use the script.
+* [x] Support for list of classes in json format.
+* [ ] Support for list of classes with non empty constructors.
+* [ ] Support for datetime
+* [x] Support for enumeration type. It will be interpreted as argparse "choices"
+* [x] _default method inside a class will be treated as the method that is going to be executed in the specified subparser. 
+* [ ] Generate a log file with last commands executed.
+* [ ] Improve performance with argument prediction. 
+  
+See the [open issues](https://github.com/AlexSua/python-cli-generator/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Usage
-You can check the documentation of the script by typing:
+## License
 
-   ```bash
-   python3 python-cli-generator.py
-   ```
+Distributed under the MIT License. See `LICENSE.md` for more information.
 
-### Parameters
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-### Options -->
 
 ## Contact
 

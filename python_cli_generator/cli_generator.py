@@ -15,8 +15,13 @@ from python_cli_generator.parsing_processor import validate_json
 
 class CliGenerator:
 
-    def __init__(self, func_decorator: FunctionType = None):
+    def __init__(self, func_decorator: FunctionType = None, store:dict=None):
         self.func_decorator = func_decorator
+        self._store = store
+
+    def _save_in_store(self,key,value):
+        if self._store is not None:
+            self._store[key] = value
 
     def _generate_short_argument(self, parameter_name: str, reserved_short_arguments: set[str]):
         parameter_name_underscores = parameter_name.replace(".", "_")
@@ -94,7 +99,6 @@ class CliGenerator:
                 if not result:
                     raise ValueError(
                         "The introduced json doesn't have the proper format.")
-                print(result)
                 return value
 
             arguments[1]["type"] = argparse_func
@@ -341,7 +345,9 @@ class CliGenerator:
         if parameter_kind is not None:
             functionParameter = True
             if parameter_kind is not inspect._ParameterKind.VAR_KEYWORD:
-                parameter_constructor_destination = destination_name + "."+"constructor."
+                parameter_class_name = class_instance.__name__
+                self._save_in_store(parameter_class_name,class_instance)
+                parameter_constructor_destination = destination_name + "."+"_constructor_{}.".format(parameter_class_name)
                 self.generate_arguments_from_function(parser, class_instance.__init__, builtin_options, reserved_short_arguments,
                                                       parameter_destination=parameter_constructor_destination, is_constructor=True)
                 # parser, subparsers  = self.create_subparser(parser,subparser_name, add_subparsers=False,parameter_destination= )

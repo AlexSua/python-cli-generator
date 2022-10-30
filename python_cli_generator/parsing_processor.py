@@ -24,6 +24,30 @@ def _process_nest_arguments(args: dict):
                 nested_arguments, {arg_key: args[arg_key]})
     return nested_arguments
 
+def _instantiation(args, cls, store):
+    kwargs = {}
+    for key,value in args.items():
+        if isinstance(value,dict):
+            kwargs[key] = _process_class_arguments(args,store)
+        else:
+            kwargs[key] = value
+    return cls(**kwargs)
+
+
+def _process_class_arguments(args:dict,store:dict):
+    result = {}
+    for key,value in args.items():
+        if "_constructor" in key:
+            class_name = key.split("_")[2]
+            return _instantiation(value, store[class_name], store)
+        elif isinstance(value,dict):
+            result[key] = _process_class_arguments(value,store)
+        else:
+            result[key] = value
+    return result
+
+
+
 
 def _clean_arguments(args, arguments_to_delete=[]):
     for element in arguments_to_delete:
@@ -63,9 +87,10 @@ def validate_json(json, cls):
     return result
 
 
-def process_parsed_arguments(args):
+def process_parsed_arguments(args, store):
     args = _clean_arguments(args)
     args = _process_nest_arguments(args)
+    args = _process_class_arguments(args,store)
     return args
 
 
