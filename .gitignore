@@ -5,3 +5,4 @@ build/
 venv/
 *.pyc
 dist/
+test_cli.py
