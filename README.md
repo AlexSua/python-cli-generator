@@ -23,7 +23,6 @@
   </p>
 </div>
 
-<!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
   <ol>
@@ -34,7 +33,6 @@
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
-        <!-- <li><a href="#install-required-python-dependencies">Install required python dependencies</a></li> -->
       </ul>
     </li>
     <li>
@@ -45,19 +43,19 @@
         <li><a href="#generate-cli">Generate CLI</a></li>
       </ul>
 	</li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
   </ol>
 </details>
 </br>
 
-<!-- ABOUT THE PROJECT -->
 ## About The Project
 This library allows a rapid creation of a CLI by automatically reading the attributes, methods and function parameters inside a class and generating its corresponding Command Line Interface through the built-in argparse library. The module contains an optional output processor able to print the result of the executed command in different formats.
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- GETTING STARTED -->
 ## Getting Started
 The necessary steps to get the library working on your environment.
 
@@ -249,14 +247,15 @@ cli.execute_command()
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+
 ## Roadmap
+
 * [x] Added options to disable/enable class attributes arguments generation.
 * [x] Support for class with non empty constructors.
-
 * [x] Support for list of classes in json format.
 * [ ] Support for list of classes with non empty constructors.
-* [ ] Support for datetime
-* [x] Support for enumeration type. It will be interpreted as argparse "choices"
+* [ ] Support for datetime.
+* [x] Support for enumeration type. It will be interpreted as argparse "choices".
 * [x] _default method inside a class will be treated as the method that is going to be executed in the specified subparser. 
 * [ ] Generate a log file with last commands executed.
 * [ ] Improve performance with argument prediction. 
