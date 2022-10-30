@@ -59,13 +59,11 @@ This library allows a rapid creation of a CLI by automatically reading the attri
 ## Getting Started
 The necessary steps to get the library working on your environment.
 
-</br>
 
 ### Prerequisites
 
 Before using the application you need to have installed [python](https://www.python.org/). You can get instructions on how to install it by following the link shown before.
 
-</br>
 
 
 ### Install the library
@@ -79,7 +77,6 @@ pip3 install git+https://github.com/AlexSua/python-cli-generator.git
 
 
 ## Usage
-</br>
 
 ### Import the library
 Import the controller class "Cli" that contains the main functionality for initializing the generation process.
@@ -88,7 +85,6 @@ Import the controller class "Cli" that contains the main functionality for initi
 from python_cli_generator import Cli
 ```
 
-</br>
 
 ### Create input classes
 Create the classes the generator will use to generate the Command line interface.
