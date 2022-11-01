@@ -12,13 +12,11 @@ import python_cli_generator.parsing_processor as parsing_processor
 class Cli():
     _class_instances = []
     _store = {}
-
     _reserved_short_arguments: set
 
     default_command_list_name: str
     function_decorator: FunctionType
     parser: argparse.ArgumentParser
-
     logger: logging.Logger
 
     def __init__(self,
@@ -39,7 +37,23 @@ class Cli():
                             \n%(message)s",
                  logger_default_level: int = logging.INFO
                  ):
+        """Initialize a CLI instance that contains the necessary information for generating the cli.
 
+        Args:
+            cli_description (str, optional): Description of the CLI. Defaults to None.
+            function_decorator (FunctionType, optional): Decorator which will wrap the functionality around the function is going to be executed. Defaults to None.
+            argparser_parser (argparse.ArgumentParser, optional): Custom argparser parser. If not . Defaults to None.
+            builtin_output_processing (bool, optional): Enable the built-in output processor and printer for the result of the executed method. Defaults to True.
+            builtin_format (str, optional): Enable the built-in format argument for selecting how the output is going to be displayed on terminal by the output_processor. Defaults to "json".
+            builtin_search_argument (bool, optional): Enable the built-in format argument for filtering the output is going to be displayed on terminal by the output_processor. Defaults to True.
+            builtin_full_help_argument (bool, optional): Enable the built-in full_help argument for hiding the argparse arguments when the full_help argument is not introduced. Defaults to False.
+            builtin_verbose_argument (bool, optional): Enable the built-in argument for showing the logger with the debug level. Defaults to True.
+            builtin_class_attributes_generator (bool, optional): Enable/Disable the generation for class attributes. Defaults to True.
+            builtin_class_functions_generator (bool, optional): Enable/Disable the generation for class methods. Defaults to True.
+            logger (argparse.ArgumentParser, optional): Custom logger that is going to be used by the library. Defaults to None.
+            logger_format (str, optional): Default format that is going to be used for printing the log messages. Defaults to "\n%(levelname)s : %(asctime)s\ \n%(message)s".
+            logger_default_level (int, optional): The efault logger level. Defaults to logging.INFO.
+        """
         super().__init__()
         self.function_decorator = function_decorator
         self.parser = argparser_parser
@@ -64,7 +78,7 @@ class Cli():
             cli_generator=self._cli_generator
         )
 
-    def __init_parser(self, cli_description: str):
+    def __init_parser(self, cli_description: str):    
         if self.parser is None:
             self.parser = argparse.ArgumentParser(
                 allow_abbrev=False,
@@ -121,14 +135,30 @@ class Cli():
         )
 
     def _generate_arguments_from_list(self, list, subparsers=None, subparser_name=None, **options):
+
         subparsers, _ = self._cli_generator.create_subparser(
             subparsers, subparser_name, add_subparsers=False)
-        reserved_short_arguments = set()
+        reserved_short_arguments = set()        
         for input_array_element in list:
             self.generate_arguments(input_array_element, subparsers=subparsers,
                                     reserved_short_arguments=reserved_short_arguments)
 
     def generate_arguments(self, input, subparsers=None, **options):
+        """Generate argparse arguments from the inserted input.
+
+        Args:
+            input (Class, dict, List): Introduce the class, dictionary (see the documentation) or list of elements from which the library generates the code.
+            subparsers (argparse.ArgumentParser, optional): Subparsers . Defaults to None.
+            builtin_output_processing (bool, optional): Enable the built-in output processor and printer for the result of the executed method. Defaults to True.
+            builtin_format (str, optional): Enable the built-in format argument for selecting how the output is going to be displayed on terminal by the output_processor. Defaults to "json".
+            builtin_search_argument (bool, optional): Enable the built-in format argument for filtering the output is going to be displayed on terminal by the output_processor. Defaults to True.
+            builtin_full_help_argument (bool, optional): Enable the built-in full_help argument for hiding the argparse arguments when the full_help argument is not introduced. Defaults to False.
+            builtin_verbose_argument (bool, optional): Enable the built-in argument for showing the logger with the debug level. Defaults to True.
+            builtin_class_attributes_generator (bool, optional): Enable/Disable the generation for class attributes. Defaults to True.
+            builtin_class_functions_generator (bool, optional): Enable/Disable the generation for class methods. Defaults to True.
+            subparser_name (str, optional): Name of the subcommand. Defaults to None.
+            subparser_doc (str, optional): Documentation for the current subcommand. Defaults to None.
+        """        
         if subparsers is None:
             subparsers = self.parser
 
@@ -146,6 +176,8 @@ class Cli():
                 break
 
     def parse(self):
+        """Parse the arguments that were generated using the method "generate_arguments".
+        """
         args = self.parser.parse_args()
         self._command = args.func
         args = parsing_processor.process_parsed_arguments(args,self._store)
@@ -156,5 +188,7 @@ class Cli():
         return args
 
     def execute_command(self):
+        """Execute the selected command.
+        """
         func_args = self._args.get("func_args", {})
         return self._command(**func_args)

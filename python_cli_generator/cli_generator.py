@@ -2,14 +2,15 @@ import argparse
 import copy
 import inspect
 import json
+from logging import exception
+import sys
 
 from enum import Enum
 from datetime import datetime
 from types import FunctionType
 from typing import Any, List, Type, get_type_hints
-from python_cli_generator import cli_builtin
-from python_cli_generator.cli_builtin import CliBuiltin
 
+from python_cli_generator.cli_builtin import CliBuiltin
 from python_cli_generator.parsing_processor import validate_json
 
 
@@ -76,8 +77,13 @@ class CliGenerator:
 
     def _process_datetime(self, arguments, parameter_default):
         # if parameter_default == None:
-        arguments[1]["type"] = lambda s: datetime.strptime(
-            s, "%Y-%m-%d")
+        def _datetime_function(s):
+            try:
+                return datetime.strptime(s,"%Y-%m-%d")
+            except Exception:
+                return datetime.strptime(s,"%Y-%m-%d/%H:%M:%S")
+            
+        arguments[1]["type"] = _datetime_function
 
     def _process_optional(self, arguments, parameter_metavar, parameter_default, reserved_short_arguments):
         arg_key = self._generate_short_argument(
@@ -111,7 +117,7 @@ class CliGenerator:
 
         self.generate_arguments_from_class(
             class_instance=parameter_default if parameter_default is not None and parameter_default is not inspect._empty else parameter_type,
-            subparser_name= parameter_name if parameter_kind is not None else None,
+            # subparser_name= parameter_name if parameter_kind is not None else None,
             parameter_kind=parameter_kind,
             **options
         )
@@ -144,6 +150,12 @@ class CliGenerator:
             st += argument + '="' + str(arguments[argument]) + '",'
         st = st[:-1]
         print("parser.add_argument({})".format(st))
+
+    def _is_arg_in_args(self,arg:str):
+        if arg is not None and arg not in sys.argv:
+            return False
+        else:
+            return True
 
     def create_subparser(self, parser, subparser_name=None, doc=None, add_subparsers=True):
         subparsers = None
@@ -249,6 +261,8 @@ class CliGenerator:
             parser, _ = self.create_subparser(
                 parser, subparser_name, function_doc)
 
+        if not self._is_arg_in_args(subparser_name): return
+
         if builtin_options is None:
             builtin_options = CliBuiltin()
         else:
@@ -335,6 +349,8 @@ class CliGenerator:
                                                        add_subparsers=not has_default_method and builtin_options.builtin_class_functions_generator,
                                                        )
 
+        if not self._is_arg_in_args(subparser_name): return
+
         if destination_name is None:
             if not class_instance.__class__.__name__ == "type":
                 destination_name = class_instance.__class__.__name__
@@ -347,7 +363,7 @@ class CliGenerator:
             if parameter_kind is not inspect._ParameterKind.VAR_KEYWORD:
                 parameter_class_name = class_instance.__name__
                 self._save_in_store(parameter_class_name,class_instance)
-                parameter_constructor_destination = destination_name + "."+"_constructor_{}.".format(parameter_class_name)
+                parameter_constructor_destination = destination_name + "."+"$constructor_{}.".format(parameter_class_name)
                 self.generate_arguments_from_function(parser, class_instance.__init__, builtin_options, reserved_short_arguments,
                                                       parameter_destination=parameter_constructor_destination, is_constructor=True)
                 # parser, subparsers  = self.create_subparser(parser,subparser_name, add_subparsers=False,parameter_destination= )
@@ -362,7 +378,10 @@ class CliGenerator:
         class_hints = {}
 
         if not class_instance.__class__.__name__ == "type":
-            class_hints = get_type_hints(class_instance)
+            try:
+                class_hints = get_type_hints(class_instance)
+            except Exception:
+                pass
 
         for class_hint, _ in class_hints.items():
             if not hasattr(class_instance, class_hint):

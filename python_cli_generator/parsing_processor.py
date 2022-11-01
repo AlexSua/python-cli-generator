@@ -28,7 +28,7 @@ def _instantiation(args, cls, store):
     kwargs = {}
     for key,value in args.items():
         if isinstance(value,dict):
-            kwargs[key] = _process_class_arguments(args,store)
+            kwargs[key] = _process_class_arguments(value,store)
         else:
             kwargs[key] = value
     return cls(**kwargs)
@@ -37,16 +37,14 @@ def _instantiation(args, cls, store):
 def _process_class_arguments(args:dict,store:dict):
     result = {}
     for key,value in args.items():
-        if "_constructor" in key:
-            class_name = key.split("_")[2]
+        if key.startswith("$constructor"):
+            class_name = key.split("_")[1]
             return _instantiation(value, store[class_name], store)
         elif isinstance(value,dict):
             result[key] = _process_class_arguments(value,store)
         else:
             result[key] = value
     return result
-
-
 
 
 def _clean_arguments(args, arguments_to_delete=[]):

@@ -7,10 +7,11 @@ from python_cli_generator import Cli
 
 class ParameterTest:
     """Parameter test class
-    parameter_test_required (str): required parameter parameter_test_attr1
+    parameter_test_required (str): optional parameter parameter_test_attr1
     parameter_test_optional (str): optional parameter parameter_test_attr2.
 
     """
+    #If it doesn't have default value is not generated.
     parameter_test_attr1: str
     parameter_test_attr2: str = ""
 
@@ -71,11 +72,29 @@ class Test2:
     t2_attr_3: datetime
     t2_attr_4: List[str] = []
 
-    def t2_method1(self, **test1: Test1):
+    def t2_method1(self, **test1: Test1):        
         print(test1)
 
     def t2_method2(self, **test1: Test1):
         print(test1)
+
+
+class Test5:
+    def __init__(self,attr_construct_t5:str) -> None:
+        """
+        Args:
+            attr_construct_t5 (str): This attribute is introduced in the constructor of Test5
+        """        
+        self.attr_construct_t5 = attr_construct_t5
+
+class Test4:
+    def __init__(self,attr_construct_t4:str, attr_t5:Test5) -> None:
+        """
+        Args:
+            attr_construct_t4 (str): This attribute is introduced in the constructor of Test4
+        """        
+        self.attr_construct_t4 = attr_construct_t4
+        self.attr_t5 = attr_t5
 
 
 class Test3:
@@ -90,18 +109,33 @@ class Test3:
     t3_attr_3: datetime
     t3_attr_4: List[str] = []
 
-    def t3_method1(self, test1):
+    def t3_method1(self, test1:Test4):
+        """Method 1 for subcommand3. This method contains an object as parameter.
+
+        Args:
+            test1 (Test4): Parameter as a class.
+
+        """        
+        return {"test1":test1.attr_t5.attr_construct_t5}
+
+    def t3_method2(self, test1:datetime):
+        """Method 2 for subcommand3.
+
+        Args:
+            test1 (datetime): A datetime
+        """        
         print(test1)
 
-    def t3_method2(self, test1):
-        print(test1)
+    def t3_method3(self, test1):
+        """Method 3 for subcommand3
 
-    def t3_method2(self, test1):
+        Args:
+            test1 (test1): attr1
+        """        
         print(test1)
 
 def test(x: str):
-    """function that does something
-
+    """
     Args:
         x (str): is an x parameter
     """    
@@ -120,7 +154,7 @@ generate_arguments_options = {
     "builtin_output_processing": True,
     "builtin_format": "json",
     "builtin_search_argument": True,
-    "builtin_full_help_argument": False,
+    "builtin_full_help_argument": True,
     "builtin_verbose_argument": True,
     "builtin_class_attributes_generator": True,
     "builtin_class_functions_generator": False
@@ -142,6 +176,7 @@ cli.generate_arguments({
 # Obtain the arguments that are introduced in the cli as a dictionary.
 args = cli.parse()
 
+# print(args)
 # Execute the selected command in the cli. 
 # If no arguments are introduced the function 
 # you select in the CLI will be executed with 
