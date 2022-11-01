@@ -258,7 +258,7 @@ cli = Cli(**options)
 # Generate CLI arguments for Test class
 cli.generate_arguments(Test())
 
-# Geberate CLI arguments for the following dictionary.
+# Generate CLI arguments for the following dictionary.
 cli.generate_arguments({
     "subcommand1": (Test1()),
     "subcommand2": [test, (Test2(), generate_arguments_options)],
