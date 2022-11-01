@@ -408,6 +408,8 @@ options:
 * [ ] Improve documentation
 * [ ] Add tests
 * [ ] Add argument that supports write into a file instead of printing in the terminal.
+* [ ] Possibility to add custom arguments.
+* [ ] Add decorators to change the behavior of the arguments generated.
   
 See the [open issues](https://github.com/AlexSua/python-cli-generator/issues) for a full list of proposed features (and known issues).
 
