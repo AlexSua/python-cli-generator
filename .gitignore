@@ -6,3 +6,4 @@ venv/
 *.pyc
 dist/
 test_cli.py
+*.egg-info/

@@ -10,9 +10,9 @@ setup(
     version="0.1",
     author="Alejandro Suárez",
     author_email="alejandrosuarez.eu@gmail.com",
-    description=(
-        "A library that allows a rapid creation of a CLI by automatically reading the attributes and parameters inside a class and generating its corresponding Command Line Interface."
-    ),
+    description=("A library that allows a rapid creation of a CLI by automatically reading the attributes and parameters inside a class and generating its corresponding Command Line Interface."),
+    long_description=read("README.md"),
+    long_description_content_type='text/markdown',
     license="MIT",
     include_package_data=True,
     keywords="python cli generator class output parsing",
@@ -20,7 +20,6 @@ setup(
     packages=find_packages(
         exclude=("build*", "dist*", "docs*", "tests*", "coverage*", "*.egg-info")
     ),
-    long_description=read("README.md"),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
