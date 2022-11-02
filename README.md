@@ -397,17 +397,17 @@ options:
 ## Roadmap
 
 * [x] Added options to disable/enable class attributes arguments generation.
-* [x] Support for class with non empty constructors.
-* [x] Support for list of classes in json format.
-* [ ] Support for list of classes with non empty constructors.
-* [x] Support for datetime with the following formats 2022-12-20/00:00:20 and 2022-12-20
+* [x] Support for class with non-empty constructors.
+* [x] Support for a list of classes in JSON format.
+* [ ] Support for a list of classes with non-empty constructors.
+* [x] Support for DateTime with the following formats 2022-12-20/00:00:20 and 2022-12-20
 * [x] Support for enumeration type. It will be interpreted as argparse "choices".
-* [x] _default method inside a class will be treated as the method that is going to be executed in the specified subparser. 
-* [ ] Generate a log file with last commands executed.
-* [x] Improve performance with argument prediction. Only generate the arguments that the program know that are introduced.
+* [x] _default method inside a class will be treated as the method that is going to be executed in the specified subparser.
+* [ ] Generate a log file with the last commands executed.
+* [x] Improve performance with argument prediction. Only generate the arguments that the program knows that are introduced.
 * [ ] Improve documentation
 * [ ] Add tests
-* [ ] Add argument that supports write into a file instead of printing in the terminal.
+* [ ] Add an argument that supports writing into a file instead of printing in the terminal.
 * [ ] Possibility to add custom arguments.
 * [ ] Add decorators to change the behavior of the arguments generated.
   
