@@ -258,7 +258,7 @@ cli = Cli(**options)
 # Generate CLI arguments for Test class
 cli.generate_arguments(Test())
 
-# Geberate CLI arguments for the following dictionary.
+# Generate CLI arguments for the following dictionary.
 cli.generate_arguments({
     "subcommand1": (Test1()),
     "subcommand2": [test, (Test2(), generate_arguments_options)],
@@ -408,6 +408,8 @@ options:
 * [ ] Improve documentation
 * [ ] Add tests
 * [ ] Add argument that supports write into a file instead of printing in the terminal.
+* [ ] Possibility to add custom arguments.
+* [ ] Add decorators to change the behavior of the arguments generated.
   
 See the [open issues](https://github.com/AlexSua/python-cli-generator/issues) for a full list of proposed features (and known issues).
 
