@@ -252,7 +252,7 @@ generate_arguments_options = {
     "builtin_class_functions_generator": False
 }
 
-# Create CLI class with the selected configuratio.
+# Create CLI class with the selected configuration.
 cli = Cli(**options)
 
 # Generate CLI arguments for Test class
