@@ -542,7 +542,7 @@ options:
 * [x] Add an argument that supports writing into a file instead of printing in the terminal.
 * [ ] Possibility to add custom arguments.
 * [ ] Add decorators to change the behavior of the arguments generated.
-* [x] Add configuration file. The CLI can fetch/store the configuration for classes introduced as argument in 'generate_arguments'
+* [x] Add configuration file. The CLI can fetch/store the configuration for classes introduced as arguments in 'generate_arguments'
 * [x] Add cache. A cache decorator can be used to save the result between executions of a function for a given set of arguments during a given time.
 * [x] Add REST API support. A REST API decorator can be used to use an API using the python method parameters as input for generating the request.
   
