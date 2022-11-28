@@ -2,11 +2,13 @@ import logging
 
 from python_cli_generator import output_printer
 
+
 class OutputProcessor:
 
     def __init__(self, logger):
         self.logger = logger
         self.format = "json"
+        self.file = None
         self.filter_list_search = None
         self.filter_list_attributes = None
 
@@ -39,7 +41,7 @@ class OutputProcessor:
                         break
         else:
             json_list_result = json_list
-            
+
         return json_list_result
 
     def _filter_list_attributes(self, json_list):
@@ -63,22 +65,22 @@ class OutputProcessor:
                     if deep_access_result is not None:
                         element[arrayAttributes[-1]] = deep_access_result
                         found_attribute = True
-                if found_attribute: result.append(element)
+                if found_attribute:
+                    result.append(element)
         else:
-            result = json_list 
+            result = json_list
         return result
 
-    def _print_result(self,result):
-        output_printer.print_json_value(result, output_format=str(self.format))
-
+    def _print_result(self, result):
+        output_printer.print_json_value(
+            result, output_format=str(self.format), file=self.file)
 
     def _process_result(self, result):
         if self.logger is not False:
             self.logger.debug("Result: {}\n".format(result))
         if not isinstance(result, dict) and not isinstance(result, list):
             return {"result": result}
-        self._print_result(result)
-
+        return result
 
     def _process_result_list(self, item_list, titles=None):
         result = []
@@ -93,19 +95,24 @@ class OutputProcessor:
 
         result = self._filter_list_attributes(result)
         result = self._filter_list_search(result)
-        self._print_result(result)
+        return result
 
+    def process_args(self, args):
+        from python_cli_generator.cli_builtin import BuiltinArguments
 
-    def process_args(self,args):
-        if "verbose" in args and args["verbose"]:
+        if BuiltinArguments.verbose.value in args and args[BuiltinArguments.verbose.value]:
             self.logger.setLevel(logging.DEBUG)
-        self.format = args.get("format", self.format)
-        self.filter_list_search = args.get("search", self.filter_list_search)
-        self.filter_list_attributes = args.get("attributes", self.filter_list_attributes)
-        
+        self.format = args.get(BuiltinArguments.format.value, self.format)
+        self.file = args.get(BuiltinArguments.file.value, self.file)
+        self.filter_list_search = args.get(
+            BuiltinArguments.search.value, self.filter_list_search)
+        self.filter_list_attributes = args.get(
+            BuiltinArguments.attribute_filter.value, self.filter_list_attributes)
 
     def process_result(self, result):
         if type(result) is list:
-            return self._process_result_list(result)
+            result = self._process_result_list(result)
         else:
-            return self._process_result(result)
+            result = self._process_result(result)
+        self._print_result(result)
+        return result

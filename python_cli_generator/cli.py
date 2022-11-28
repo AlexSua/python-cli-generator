@@ -3,13 +3,14 @@ import argparse
 import logging
 from types import FunctionType
 
-from python_cli_generator.cli_builtin import CliBuiltin
+from python_cli_generator.cli_builtin import CliOptions, CliBuiltin
 from python_cli_generator.cli_generator import CliGenerator
 from python_cli_generator.output_processor import OutputProcessor
 import python_cli_generator.parsing_processor as parsing_processor
 
 
 class Cli():
+    
     _class_instances = []
     _store = {}
     _reserved_short_arguments: set
@@ -23,19 +24,11 @@ class Cli():
                  cli_description: str = None,
                  function_decorator: FunctionType = None,
                  argparser_parser: argparse.ArgumentParser = None,
-
-                 builtin_output_processing: bool = True,
-                 builtin_format: str = "json",
-                 builtin_search_argument: bool = True,
-                 builtin_full_help_argument: bool = False,
-                 builtin_verbose_argument: bool = True,
-                 builtin_class_attributes_generator: bool = True,
-                 builtin_class_functions_generator: bool = True,
-
                  logger: argparse.ArgumentParser = None,
                  logger_format: str = "\n%(levelname)s : %(asctime)s\
                             \n%(message)s",
-                 logger_default_level: int = logging.INFO
+                 logger_default_level: int = logging.INFO,
+                 **builtin_options:CliOptions
                  ):
         """Initialize a CLI instance that contains the necessary information for generating the cli.
 
@@ -43,16 +36,21 @@ class Cli():
             cli_description (str, optional): Description of the CLI. Defaults to None.
             function_decorator (FunctionType, optional): Decorator which will wrap the functionality around the function is going to be executed. Defaults to None.
             argparser_parser (argparse.ArgumentParser, optional): Custom argparser parser. If not . Defaults to None.
-            builtin_output_processing (bool, optional): Enable the built-in output processor and printer for the result of the executed method. Defaults to True.
-            builtin_format (str, optional): Enable the built-in format argument for selecting how the output is going to be displayed on terminal by the output_processor. Defaults to "json".
-            builtin_search_argument (bool, optional): Enable the built-in format argument for filtering the output is going to be displayed on terminal by the output_processor. Defaults to True.
-            builtin_full_help_argument (bool, optional): Enable the built-in full_help argument for hiding the argparse arguments when the full_help argument is not introduced. Defaults to False.
-            builtin_verbose_argument (bool, optional): Enable the built-in argument for showing the logger with the debug level. Defaults to True.
-            builtin_class_attributes_generator (bool, optional): Enable/Disable the generation for class attributes. Defaults to True.
-            builtin_class_functions_generator (bool, optional): Enable/Disable the generation for class methods. Defaults to True.
             logger (argparse.ArgumentParser, optional): Custom logger that is going to be used by the library. Defaults to None.
             logger_format (str, optional): Default format that is going to be used for printing the log messages. Defaults to "\n%(levelname)s : %(asctime)s\ \n%(message)s".
             logger_default_level (int, optional): The efault logger level. Defaults to logging.INFO.
+            format (str, optional): Set the default format that is going to be printed in the terminal. Defaults to "json".
+            file (str, optional): Set the default path where the file that contains the output content is going to be saved. Defaults to "result_[script_name]".
+            configuration_file (str, optional): Set the default configuration file.
+            enable_output_processing (bool, optional): Enable output processing. Defaults to True.
+            enable_format_argument (bool, optional): Enable the built-in format argument for changing the format with the output is going to be printed. Defaults to True.
+            enable_file_argument (bool, optional): Enable the built-in file argument for saving the output the specified path. Defaults to True.
+            enable_search_argument (bool, optional): Enable the built-in search argument for filtering the output is going to be displayed on terminal by the output_processor. Defaults to True.
+            enable_full_help_argument (bool, optional): Enable the built-in full_help argument for hiding the argparse arguments when the full_help argument is not introduced. Defaults to False.
+            enable_verbose_argument (bool, optional): Enable the built-in argument for showing the logger with the debug level. Defaults to True.
+            enable_class_attributes_generator (bool, optional): Enable/Disable the generation for class attributes. Defaults to True.
+            enable_class_functions_generator (bool, optional): Enable/Disable the generation for class methods. Defaults to True.
+
         """
         super().__init__()
         self.function_decorator = function_decorator
@@ -67,15 +65,9 @@ class Cli():
         self._output_processor = OutputProcessor(self.logger)
         self._cli_generator = CliGenerator(self.function_decorator,self._store)
         self._cli_builtin = CliBuiltin(
-            builtin_output_processing,
-            builtin_format,
-            builtin_search_argument,
-            builtin_full_help_argument,
-            builtin_verbose_argument,
-            builtin_class_attributes_generator,
-            builtin_class_functions_generator,
             output_processor=self._output_processor,
-            cli_generator=self._cli_generator
+            cli_generator=self._cli_generator,
+            **builtin_options
         )
 
     def __init_parser(self, cli_description: str):    
@@ -149,16 +141,21 @@ class Cli():
         Args:
             input (Class, dict, List): Introduce the class, dictionary (see the documentation) or list of elements from which the library generates the code.
             subparsers (argparse.ArgumentParser, optional): Subparsers . Defaults to None.
-            builtin_output_processing (bool, optional): Enable the built-in output processor and printer for the result of the executed method. Defaults to True.
-            builtin_format (str, optional): Enable the built-in format argument for selecting how the output is going to be displayed on terminal by the output_processor. Defaults to "json".
-            builtin_search_argument (bool, optional): Enable the built-in format argument for filtering the output is going to be displayed on terminal by the output_processor. Defaults to True.
-            builtin_full_help_argument (bool, optional): Enable the built-in full_help argument for hiding the argparse arguments when the full_help argument is not introduced. Defaults to False.
-            builtin_verbose_argument (bool, optional): Enable the built-in argument for showing the logger with the debug level. Defaults to True.
-            builtin_class_attributes_generator (bool, optional): Enable/Disable the generation for class attributes. Defaults to True.
-            builtin_class_functions_generator (bool, optional): Enable/Disable the generation for class methods. Defaults to True.
             subparser_name (str, optional): Name of the subcommand. Defaults to None.
             subparser_doc (str, optional): Documentation for the current subcommand. Defaults to None.
-        """        
+            format (str, optional): Set the default format that is going to be printed in the terminal. Defaults to "json".
+            file (str, optional): Set the default path where the file that contains the output content is going to be saved. Defaults to "result_[script_name]".
+            configuration_file (str, optional): Set the default configuration file.
+            enable_output_processing (bool, optional): Enable output processing. Defaults to True.
+            enable_format_argument (bool, optional): Enable the built-in format argument for changing the format with the output is going to be printed. Defaults to True.
+            enable_file_argument (bool, optional): Enable the built-in file argument for saving the output the specified path. Defaults to True.
+            enable_search_argument (bool, optional): Enable the built-in search argument for filtering the output is going to be displayed on terminal by the output_processor. Defaults to True.
+            enable_full_help_argument (bool, optional): Enable the built-in full_help argument for hiding the argparse arguments when the full_help argument is not introduced. Defaults to False.
+            enable_verbose_argument (bool, optional): Enable the built-in argument for showing the logger with the debug level. Defaults to True.
+            enable_class_attributes_generator (bool, optional): Enable/Disable the generation for class attributes. Defaults to True.
+            enable_class_functions_generator (bool, optional): Enable/Disable the generation for class methods. Defaults to True.
+
+        """
         if subparsers is None:
             subparsers = self.parser
 

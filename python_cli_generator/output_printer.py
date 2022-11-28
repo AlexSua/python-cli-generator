@@ -1,14 +1,25 @@
 import json
 
 def print_format_raw(json_object):
-    print(str(json_object))
+    return str(json_object)
 
 def print_format_json(json_object):
-    print(json.dumps(json_object, indent=4))
+    try:
+        return json.dumps(json_object, indent=4)
+    except:
+        return json_object
+
+def stdout(print_result, file=None):
+    if file is not None:
+        with open(str(file), 'w') as f:
+            f.write(print_result+"\n")
+    else:
+        print(print_result)
 
 def print_format_table(json_list, title = None, filtered_attributes = None):
+    print_result = ""
     if len(json_list) <= 0:
-        print("No elements to show.")
+        print_result+="No elements to show.\n"
         return
 
     if isinstance(json_list, list) and isinstance(json_list[0], dict) and filtered_attributes is None:
@@ -41,10 +52,9 @@ def print_format_table(json_list, title = None, filtered_attributes = None):
         line = line + "|"
         underline = underline+"+"
         max_line_size = len(line)
-        # print("+{title:-^{width}}+".format(title=" {} ".format(title).upper(), width=max_line_size-2))
-        print("+{title:-^{width}}+".format(title="", width=max_line_size-2))
-        print(line)
-        print("{}".format(underline))
+        print_result+="+{title:-^{width}}+\n".format(title="", width=max_line_size-2)
+        print_result+=line+"\n"
+        print_result+="{}\n".format(underline)
         for json_el in json_list:
             line = ""
             for f_attribute in filtered_attributes:
@@ -54,11 +64,12 @@ def print_format_table(json_list, title = None, filtered_attributes = None):
 
                 line += "| {title: ^{width}} ".format(title=title, width=size_keys_dict[f_attribute])
             line += "|"
-            print(line)
-        print("{}".format(underline))
+            print_result+=line+"\n"
+        print_result+="{}\n".format(underline)
+    return print_result
 
 
-def print_json_value( json_value, title=None, filtered_attributes=None, output_format=None):
+def print_json_value( json_value, title=None, filtered_attributes=None, output_format=None, file = None):
 
     if isinstance(json_value, list) and len(json_value)>0 and isinstance(json_value[0], dict) :
         if output_format is None:
@@ -75,6 +86,5 @@ def print_json_value( json_value, title=None, filtered_attributes=None, output_f
         "raw": lambda: print_format_raw(json_value)
     }
 
-    print_functions.get(output_format,lambda: print_format_json(json_value))()
-
-
+    print_result = print_functions.get(output_format,lambda: print_format_json(json_value))()
+    stdout(print_result, file)

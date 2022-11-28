@@ -1,9 +1,22 @@
 
 
 from datetime import datetime
+from enum import Enum
 from typing import List
 from python_cli_generator import Cli
+from python_cli_generator.plugins.cache import CacheStorageFile
+from python_cli_generator.plugins.http import HTTPSession
 
+# Introduce as arguments here all parameters who wish to be passed as attributes to requests session. This was done in this way to lazy import the requests library due to its impact on the performance.
+jikanmoe = HTTPSession(url_base="https://api.jikan.moe/v4/", headers={
+  'sec-ch-ua': '"Google Chrome";v="107", "Chromium";v="107", "Not=A?Brand";v="24"',
+  'sec-ch-ua-mobile': '?0',
+  'sec-ch-ua-platform': '"Linux"',
+  'Upgrade-Insecure-Requests': '1',
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+})
+cache_storage = CacheStorageFile(file_name=".cache.example_filename")
 
 class ParameterTest:
     """Parameter test class
@@ -15,7 +28,14 @@ class ParameterTest:
     parameter_test_attr1: str
     parameter_test_attr2: str = ""
 
-
+class AnimeType(Enum):
+    tv = "tv"
+    movie = "movie"
+    ova = "ova"
+    special = "special"
+    ona = "ona"
+    music = "music"
+    
 class Test:
     """Test class
     test_attr_1 (str): optional parameter test_attr_1
@@ -25,10 +45,30 @@ class Test:
     test_attr_2: str
 
     def __init__(self):
-        self.test_attr_1 = "test1"
-        self.test_attr_2 = "test2"
+        # self.test_attr_1 = "test1"
+        # self.test_attr_2 = "test2"
+        pass
 
-    def t_method(self, test3, test4="test4", **test5: ParameterTest):
+    # Store cache for a maximum of 60 seconds.
+    @cache_storage.cache(max_age=60)
+
+    # Fetch anime from the path /anime of jikanmoe. Query params are automatically introduced given the optional parameters of the method.
+    # _response gives you the response of the request. If you use the POST method positional parameters are introduced as body parameters.
+    @jikanmoe.fetch("anime", method="GET")
+    def anime_search(self, q: str = None,  min_score: int = None, type: AnimeType = None, sort: str = "desc", _response: dict = None):
+        """Get anime list from mal
+        Args:
+            q (str, optional): Query anime. Defaults to None.
+            min_score (int, optional): Minimum score. Defaults to None.
+            type (AnimeType, optional): Type of anime. Defaults to None.
+            sort (str, optional): Sort anime. Defaults to None.
+
+        """
+        return list(map(lambda x: {"mal_id": x["mal_id"], "title": x["titles"][0]["title"], "genres": ",".join(list(map(lambda y: y["name"], x["genres"]))), "score": x["score"]}, _response["data"]))
+
+
+
+    def t_method2(self, test3, test4="test4", **test5: ParameterTest):
         """A method1 example
 
         Args:
@@ -73,10 +113,10 @@ class Test2:
     t2_attr_4: List[str] = []
 
     def t2_method1(self, **test1: Test1):        
-        print(test1)
+        return test1 
 
     def t2_method2(self, **test1: Test1):
-        print(test1)
+        return test1
 
 
 class Test5:
@@ -144,20 +184,45 @@ def test(x: str):
 
 
 options = {
-    "builtin_output_processing": True,
-    "builtin_format": "json",
-    "builtin_search_argument": True,
-    "builtin_full_help_argument": False,
-    "builtin_verbose_argument": True,
+    # Enable/disable the output processing. The automatically format of the executed method.
+    "enable_output_processing": True,
+
+    # Enable/disable the argument that specify the format with which the user can specify a print format to the output processor.
+    "enable_format_argument": True,
+
+    # Default format for the output processor
+    "format": "json",
+
+    # Enable/disable the argument that tells the program to output the result inside a file.
+    "enable_file_argument":True,
+
+    # Enable/disable the argument that allows to search for elements inside a result that is a list of elements.
+    "enable_search_argument": True,
+
+    # Enable/disable the argument that allows to hide the full list of optional arguments.
+    "enable_full_help_argument": False,
+
+    # Enable/disable the argument that allows to set the log level to debug.
+    "enable_verbose_argument": True,
+
+    # Configuration file where configuration of classes (attributes) will be stored between executions.
+    "configuration_file": "./configuration_file.json"
 }
+
+# Options per subcommand
 generate_arguments_options = {
-    "builtin_output_processing": True,
-    "builtin_format": "json",
-    "builtin_search_argument": True,
-    "builtin_full_help_argument": True,
-    "builtin_verbose_argument": True,
-    "builtin_class_attributes_generator": True,
-    "builtin_class_functions_generator": False
+    "enable_format_argument": True,
+    "format": "json",
+    "enable_file_argument":True,
+    "enable_search_argument": True,
+    "enable_full_help_argument": True,
+    "enable_verbose_argument": True,
+
+    # Enable/disable the generation of arguments from attributes of a class.
+    "enable_class_attributes_generator": True,
+
+    # Enable/disable the generation of arguments from functions of a class.
+    "enable_class_functions_generator": False
 }
 
 # Create CLI class with the selected configuratio.
@@ -169,7 +234,7 @@ cli.generate_arguments(Test())
 # Geberate CLI arguments for the following dictionary.
 cli.generate_arguments({
     "subcommand1": (Test1()),
-    "subcommand2": [test, (Test2(), generate_arguments_options)],
+    "subcommand2": [(Test2(), generate_arguments_options)],
     "subcommand3": (Test3()),
 })
 
