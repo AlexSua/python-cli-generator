@@ -336,7 +336,7 @@ generate_arguments_options = {
     "enable_class_functions_generator": False
 }
 
-# Create CLI class with the selected configuratio.
+# Create CLI class with the selected configuration.
 cli = Cli(**options)
 
 # Generate CLI arguments for Test class
@@ -535,7 +535,7 @@ options:
 * [x] Support for DateTime with the following formats 2022-12-20/00:00:20 and 2022-12-20
 * [x] Support for enumeration type. It will be interpreted as argparse "choices".
 * [x] _default method inside a class will be treated as the method that is going to be executed in the specified subparser. 
-* [ ] Generate a log file with the last commands executed.
+* [ ] Generate a log file with last commands executed.
 * [x] Improve performance with argument prediction. Only generate the arguments that the program know that are introduced.
 * [ ] Improve documentation
 * [ ] Add tests
