@@ -36,8 +36,14 @@ class HTTPSession:
             kwarg_element = None
             if parameter_name in kwargs:
                 kwarg_element = kwargs[parameter_name]
-                def adapt_kwarg(value): return value.__dict__ if hasattr(
-                    value, "__dict__") else {parameter_value.name: value}
+                def adapt_kwarg(value): 
+                    value_type = type(value)
+                    if value_type.__module__ != "builtins":
+                        if issubclass(value_type, Enum) or value_type == Enum or value_type.__name__ == "EnumMeta":
+                            return  {parameter_value.name: value}
+                        return value.__dict__    
+                    else:
+                        return {parameter_value.name: value}
                     
                 if parameter_value.default == inspect._empty:
                     json = {

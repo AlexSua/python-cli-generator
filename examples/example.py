@@ -35,6 +35,21 @@ class AnimeType(Enum):
     special = "special"
     ona = "ona"
     music = "music"
+
+class AnimeOrderBy(Enum):
+    mal_id = "mal_id"
+    title = "title"
+    rating = "rating"
+    type = "type"
+    start_date = "start_date"
+    end_date = "end_date"
+    episodes = "episodes"
+    score = "score"
+    scored_by = "scored_by"
+    rank = "rank"
+    popularity = "popularity"
+    members = "members"
+    favorites = "favorites"
     
 class Test:
     """Test class
@@ -55,7 +70,7 @@ class Test:
     # Fetch anime from the path /anime of jikanmoe. Query params are automatically introduced given the optional parameters of the method.
     # _response gives you the response of the request. If you use the POST method positional parameters are introduced as body parameters.
     @jikanmoe.fetch("anime", method="GET")
-    def anime_search(self, q: str = None,  min_score: int = None, type: AnimeType = None, sort: str = "desc", _response: dict = None):
+    def anime_search(self, q: str = None,  min_score: int = None, page=None, type: AnimeType = None, order_by:AnimeOrderBy = None, sort: str = None, _response: dict = None):
         """Get anime list from mal
         Args:
             q (str, optional): Query anime. Defaults to None.
