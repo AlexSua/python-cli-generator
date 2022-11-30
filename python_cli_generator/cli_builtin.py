@@ -29,6 +29,8 @@ class FormatOptions(Enum):
     json = "json"
     table = "table"
     raw = "raw"
+    csv = "csv"
+    yaml = "yaml"
 
 
 class BuiltinArguments(Enum):
