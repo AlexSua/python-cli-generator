@@ -545,6 +545,7 @@ options:
 * [x] Add configuration file. The CLI can fetch/store the configuration for classes introduced as arguments in 'generate_arguments'
 * [x] Add cache. A cache decorator can be used to save the result between executions of a function for a given set of arguments during a given time.
 * [x] Add REST API support. A REST API decorator can be used to use an API using the python method parameters as input for generating the request.
+* [x] Add multiple output support. CSV and YAML.
   
 See the [open issues](https://github.com/AlexSua/python-cli-generator/issues) for a full list of proposed features (and known issues).
 
