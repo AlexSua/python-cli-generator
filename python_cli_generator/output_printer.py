@@ -1,5 +1,13 @@
 import json
 
+def stdout(print_result, file=None):
+    if file is not None:
+        with open(str(file), 'w') as f:
+            f.write(print_result+"\n")
+    else:
+        print(print_result)
+
+
 def print_format_raw(json_object):
     return str(json_object)
 
@@ -9,12 +17,10 @@ def print_format_json(json_object):
     except:
         return json_object
 
-def stdout(print_result, file=None):
-    if file is not None:
-        with open(str(file), 'w') as f:
-            f.write(print_result+"\n")
-    else:
-        print(print_result)
+def print_format_yaml(json_object):
+    import yaml
+    yaml_result = yaml.dump(json_object)
+    return yaml_result
 
 def print_format_table(json_list, title = None, filtered_attributes = None):
     print_result = ""
@@ -68,6 +74,24 @@ def print_format_table(json_list, title = None, filtered_attributes = None):
         print_result+="{}\n".format(underline)
     return print_result
 
+def print_format_csv(json_list,filtered_attributes=None):
+    import csv
+    import io
+
+    mem_file = io.StringIO()
+
+    if isinstance(json_list, list) and isinstance(json_list[0], dict) and filtered_attributes is None:
+        filtered_attributes = []
+        for key in json_list[0]:
+            filtered_attributes.append(key)
+        
+        writer = csv.DictWriter(mem_file, fieldnames=filtered_attributes, quotechar="\"")
+        writer.writeheader()
+        for json_element in json_list:
+            writer.writerow(json_element)
+
+    return mem_file.getvalue()
+
 
 def print_json_value( json_value, title=None, filtered_attributes=None, output_format=None, file = None):
 
@@ -82,8 +106,10 @@ def print_json_value( json_value, title=None, filtered_attributes=None, output_f
 
     print_functions = {
         "json": lambda: print_format_json(json_value),
+        "csv": lambda: print_format_csv(json_value,filtered_attributes),
         "table": lambda: print_format_table(json_value,title, filtered_attributes),
-        "raw": lambda: print_format_raw(json_value)
+        "raw": lambda: print_format_raw(json_value),
+        "yaml": lambda: print_format_yaml(json_value)
     }
 
     print_result = print_functions.get(output_format,lambda: print_format_json(json_value))()
