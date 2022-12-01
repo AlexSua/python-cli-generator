@@ -45,16 +45,14 @@ class CacheStorage():
         }
 
     def cache(self,max_age=30):
-
         def _cache_decorator(fn,*args, no_cache: bool = False, cache_salt: str = None, max_age = max_age, **kwargs):
             key = self._get_hash(
                 json.dumps(
                     {
-                        "args": args[1:],
+                        "args": list(args[1:]) + list(kwargs.values()),
                         "cache_salt": cache_salt,
                         "module": fn.__module__,
                         "func": fn.__name__,
-                        **kwargs,
                     },
                     default=lambda x: x.__dict__ if hasattr(x, '__dict__') else dir(x),
                     sort_keys=True,

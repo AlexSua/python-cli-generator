@@ -28,12 +28,16 @@ class HTTPSession:
         json = {}
         params = {}
 
+        position=-1
         for parameter_name in signature.parameters:
+            position+=1
             if parameter_name in ["self"] or parameter_name.startswith("_"):
                 continue
             parameter_value = signature.parameters[parameter_name]
-
             kwarg_element = None
+
+            if parameter_name not in kwargs and position < len(args):
+                kwargs[parameter_name] = args[position]
             if parameter_name in kwargs:
                 kwarg_element = kwargs[parameter_name]
                 def adapt_kwarg(value): 
@@ -81,7 +85,6 @@ class HTTPSession:
             return response.content.decode(decode)
 
     def fetch(self, url: str = "", method: HTTPMethods = "GET", **request_options, ):
-
         def _http_call(fn, *args, url=url, **kwargs):
             json, params = self._http_transform_function_values(
                 fn, *args, **kwargs)
