@@ -347,8 +347,9 @@ class CliGenerator:
 
         DEFAULT_METHOD_NAME = "_default"
         has_default_method = hasattr(class_instance, DEFAULT_METHOD_NAME)
+        has_more_than_default =  len([attr for attr in dir(class_instance) if callable(not attr.startswith("_") and getattr(class_instance, attr)) ])>0
 
-        if cli_builtin_options.enable_class_functions_generator and parameter_kind is None and not has_default_method:
+        if cli_builtin_options.enable_class_functions_generator and parameter_kind is None and (not has_default_method or (has_default_method and has_more_than_default)):
             parser, subparsers = self.create_subparser(parser, subparser_name, class_doc,)
 
         if not self._is_arg_in_args(subparser_name):
@@ -422,7 +423,7 @@ class CliGenerator:
                         reserved_short_arguments)
 
                     function_subparser = parser
-                    if not has_default_method:
+                    if member_name != DEFAULT_METHOD_NAME:
                         function_subparser = subparsers.add_parser(
                             parameter_metavar, help=doc, allow_abbrev=False)
                     self.generate_arguments_from_function(

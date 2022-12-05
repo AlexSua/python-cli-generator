@@ -27,7 +27,7 @@ class Cli():
                  logger: argparse.ArgumentParser = None,
                  logger_format: str = "\n%(levelname)s : %(asctime)s\
                             \n%(message)s",
-                 logger_default_level: int = logging.INFO,
+                 logger_default_level: int = logging.CRITICAL,
                  **builtin_options:CliOptions
                  ):
         """Initialize a CLI instance that contains the necessary information for generating the cli.
@@ -62,7 +62,7 @@ class Cli():
         self._store= {}
         self.__init_parser(cli_description)
         self.__init_logger(logger_format, logger_default_level)
-        self._output_processor = OutputProcessor(self.logger)
+        self._output_processor = OutputProcessor(self.logger,**builtin_options)
         self._cli_generator = CliGenerator(self.function_decorator,self._store)
         self._cli_builtin = CliBuiltin(
             output_processor=self._output_processor,

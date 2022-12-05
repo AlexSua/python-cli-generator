@@ -154,7 +154,7 @@ class Test:
         pass
 
     # Store cache for a maximum of 60 seconds.
-    @cache_storage.cache(max_age=60)
+    @cache_storage.cache(expiration=60)
 
     # Fetch anime from the path /anime of jikanmoe. Query params are automatically introduced given the optional parameters of the method.
     # _response gives you the response of the request. If you use the POST method positional parameters are introduced as body parameters.

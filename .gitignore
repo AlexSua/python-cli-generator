@@ -9,3 +9,4 @@ test_cli.py
 test_*
 .cache*
 *.egg-info/
+chatbot*

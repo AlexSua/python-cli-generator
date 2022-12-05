@@ -2,6 +2,7 @@ import copy
 import inspect
 
 from enum import Enum
+from python_cli_generator.input_processor import generate_json_from_class
 from python_cli_generator.utils import decorator_factory
 
 
@@ -25,13 +26,16 @@ class HTTPSession:
     def _http_transform_function_values(self, fn, *args, **kwargs):
         signature = inspect.signature(fn)
 
-        json = {}
+        json_data = {}
         params = {}
 
         position=-1
         for parameter_name in signature.parameters:
             position+=1
+
             if parameter_name in ["self"] or parameter_name.startswith("_"):
+                if parameter_name == "_data":
+                    json_data = args[position]
                 continue
             parameter_value = signature.parameters[parameter_name]
             kwarg_element = None
@@ -45,20 +49,19 @@ class HTTPSession:
                     if value_type.__module__ != "builtins":
                         if issubclass(value_type, Enum) or value_type == Enum or value_type.__name__ == "EnumMeta":
                             return  {parameter_value.name: value}
-                        return value.__dict__    
+                        return  generate_json_from_class(value)
                     else:
                         return {parameter_value.name: value}
                     
                 if parameter_value.default == inspect._empty:
-                    json = {
-                        **json, **adapt_kwarg(kwarg_element)
+                    json_data = {
+                        **json_data, **adapt_kwarg(kwarg_element)
                     }
                 else:
                     params = {
                         **params, **adapt_kwarg(kwarg_element)
                     }
-
-        return (json, params)
+        return (json_data, params)
 
     def _http_process_url(self, url: str, attributes: dict):
         for key, value in copy.copy(attributes).items():
@@ -69,7 +72,7 @@ class HTTPSession:
         return url
 
     def _request(self, url, method, decode="UTF-8", **kwargs):
-        from requests import Session
+        from requests import Session        
         if self.session is None:
             self.session = Session()  
             for kwarg_name, kwarg_value in self.kwargs.items():
@@ -84,13 +87,15 @@ class HTTPSession:
         else:
             return response.content.decode(decode)
 
-    def fetch(self, url: str = "", method: HTTPMethods = "GET", **request_options, ):
+    def fetch(self, url: str = "", method: HTTPMethods = "GET", json_type=True, **request_options, ):
         def _http_call(fn, *args, url=url, **kwargs):
-            json, params = self._http_transform_function_values(
+            json_data, params = self._http_transform_function_values(
                 fn, *args, **kwargs)
-            url = self._http_process_url(url, json)
+            url = self._http_process_url(url, json_data)
+            request_options["json" if json_type else "data"] = json_data if json_data else None
+            request_options["params"] = params=params if params else None
             response = self._request(
-                url, method, params=params if params else None, data=json if json else None, **request_options)
+                url, method,  **request_options)
 
             if inspect.signature(fn).parameters.get("_response"):
                 kwargs["_response"] = response

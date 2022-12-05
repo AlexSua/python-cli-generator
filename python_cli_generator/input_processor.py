@@ -14,7 +14,6 @@ def _update_class_with_dict(attr, attr_name, class_instance, data):
         except Exception:
             pass
 
-
 def set_dict_into_class(data_dic, class_instance):
     for data_key in data_dic:
         if hasattr(class_instance, data_key):
@@ -23,7 +22,6 @@ def set_dict_into_class(data_dic, class_instance):
                 attr, data_key, class_instance, data_dic[data_key])
 
     return class_instance
-
 
 def generate_json_from_class(cls):
     result = {}
@@ -49,6 +47,15 @@ def get_dict_from_file(file_path):
 def set_file_from_dict(file_path, data):
     with open(file_path,"w") as f:
         return json.dump(data,f)
+
+def remove_none_values(d):
+    if not isinstance(d, dict):
+        return d
+    new_dict = {}
+    for k, v in d.items():
+        if v is not None:
+            new_dict[k] = remove_none_values(v)
+    return new_dict
 
 def process_configuration_file(cls, configuration_file):
     if configuration_file is not None:

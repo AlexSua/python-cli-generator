@@ -5,10 +5,10 @@ from python_cli_generator import output_printer
 
 class OutputProcessor:
 
-    def __init__(self, logger):
+    def __init__(self, logger, format="json", file=None, **kwargs):
         self.logger = logger
-        self.format = "json"
-        self.file = None
+        self.format = format
+        self.file = file
         self.filter_list_search = None
         self.filter_list_attributes = None
 
@@ -78,7 +78,7 @@ class OutputProcessor:
     def _process_result(self, result):
         if self.logger is not False:
             self.logger.debug("Result: {}\n".format(result))
-        if not isinstance(result, dict) and not isinstance(result, list):
+        if not isinstance(result, dict) and not isinstance(result, list) and str(self.format) != "raw":
             return {"result": result}
         return result
 
@@ -87,7 +87,12 @@ class OutputProcessor:
         for item in item_list:
             result_item = {}
             if not isinstance(item, dict):
-                item = vars(item)
+                if item.__class__.__module__ != "builtins":
+                    item = vars(item)
+                else:
+                    item = item
+                    result.append(item)
+                    continue
             for attr in item:
                 if titles is None or attr in titles:
                     result_item[attr] = item[attr]
