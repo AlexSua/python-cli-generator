@@ -7,7 +7,7 @@ def read(fname):
     
 setup(
     name="python-cli-generator",
-    version="0.2.2",
+    version="0.2.3",
     author="Alejandro Suárez",
     author_email="alejandrosuarez.eu@gmail.com",
     description=("A library that allows a rapid creation of a CLI by automatically reading the attributes and parameters inside a class and generating its corresponding Command Line Interface."),

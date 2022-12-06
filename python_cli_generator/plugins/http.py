@@ -6,6 +6,12 @@ from python_cli_generator.input_processor import generate_json_from_class
 from python_cli_generator.utils import decorator_factory
 
 
+class HTTPError(Exception):
+    def __init__(self, code, message):
+        super().__init__(message)
+        self.code = code
+        self.message = message
+
 class HTTPMethods(Enum):
     get = "GET"
     post = "POST"
@@ -72,20 +78,24 @@ class HTTPSession:
         return url
 
     def _request(self, url, method, decode="UTF-8", **kwargs):
-        from requests import Session        
+        import requests
+        from requests import Session     
+
         if self.session is None:
             self.session = Session()  
             for kwarg_name, kwarg_value in self.kwargs.items():
                 if hasattr(self.session,kwarg_name):
                     setattr(self.session,kwarg_name, kwarg_value)   
-
-        url = self.url_base + url
-        response = self.session.request(method, url, **kwargs)
-        response.raise_for_status()
-        if response.headers.get("Content-Type").startswith("application/json"):
-            return response.json()
-        else:
-            return response.content.decode(decode)
+        try:
+            url = self.url_base + url
+            response = self.session.request(method, url, **kwargs)
+            response.raise_for_status()
+            if response.headers.get("Content-Type").startswith("application/json"):
+                return response.json()
+            else:
+                return response.content.decode(decode)
+        except requests.HTTPError as e:
+            raise HTTPError(e.response.status_code,e.response.text)
 
     def fetch(self, url: str = "", method: HTTPMethods = "GET", json_type=True, **request_options, ):
         def _http_call(fn, *args, url=url, **kwargs):

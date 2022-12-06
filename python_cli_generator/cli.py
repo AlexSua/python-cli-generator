@@ -10,7 +10,7 @@ import python_cli_generator.parsing_processor as parsing_processor
 
 
 class Cli():
-    
+
     _class_instances = []
     _store = {}
     _reserved_short_arguments: set
@@ -28,7 +28,7 @@ class Cli():
                  logger_format: str = "\n%(levelname)s : %(asctime)s\
                             \n%(message)s",
                  logger_default_level: int = logging.CRITICAL,
-                 **builtin_options:CliOptions
+                 **builtin_options: CliOptions
                  ):
         """Initialize a CLI instance that contains the necessary information for generating the cli.
 
@@ -59,18 +59,20 @@ class Cli():
         self._command = None
         self._args = None
         self._reserved_short_arguments = set()
-        self._store= {}
+        self._store = {}
         self.__init_parser(cli_description)
         self.__init_logger(logger_format, logger_default_level)
-        self._output_processor = OutputProcessor(self.logger,**builtin_options)
-        self._cli_generator = CliGenerator(self.function_decorator,self._store)
+        self._output_processor = OutputProcessor(
+            self.logger, **builtin_options)
+        self._cli_generator = CliGenerator(
+            self.function_decorator, self._store)
         self._cli_builtin = CliBuiltin(
             output_processor=self._output_processor,
             cli_generator=self._cli_generator,
             **builtin_options
         )
 
-    def __init_parser(self, cli_description: str):    
+    def __init_parser(self, cli_description: str):
         if self.parser is None:
             self.parser = argparse.ArgumentParser(
                 allow_abbrev=False,
@@ -130,12 +132,12 @@ class Cli():
 
         subparsers, _ = self._cli_generator.create_subparser(
             subparsers, subparser_name, add_subparsers=False)
-        reserved_short_arguments = set()        
+        reserved_short_arguments = set()
         for input_array_element in list:
             self.generate_arguments(input_array_element, subparsers=subparsers,
                                     reserved_short_arguments=reserved_short_arguments)
 
-    def generate_arguments(self, input, subparsers=None, **options):
+    def generate_arguments(self, input, subparsers=None, reserved_short_arguments=None, **options):
         """Generate argparse arguments from the inserted input.
 
         Args:
@@ -159,6 +161,9 @@ class Cli():
         if subparsers is None:
             subparsers = self.parser
 
+        if reserved_short_arguments is None:
+            reserved_short_arguments = set("h")
+
         instance_dict = {
             tuple: self._generate_arguments_from_tuple,
             dict: self._generate_arguments_from_dict,
@@ -169,7 +174,8 @@ class Cli():
 
         for input_type in instance_dict:
             if isinstance(input, input_type):
-                instance_dict[input_type](input, subparsers, **options)
+                instance_dict[input_type](
+                    input, subparsers, reserved_short_arguments=reserved_short_arguments, **options)
                 break
 
     def parse(self):
@@ -177,7 +183,7 @@ class Cli():
         """
         args = self.parser.parse_args()
         self._command = args.func
-        args = parsing_processor.process_parsed_arguments(args,self._store)
+        args = parsing_processor.process_parsed_arguments(args, self._store)
         self._output_processor.process_args(args)
         for class_instance in self._class_instances:
             parsing_processor.set_args_into_class(args, class_instance)

@@ -340,7 +340,7 @@ class CliGenerator:
         cli_builtin.set_configuration_file(class_instance)
 
         if reserved_short_arguments is None:
-            reserved_short_arguments = set()
+            reserved_short_arguments = set("h")
 
         class_doc = class_instance.__doc__.split(
             "\n")[0] if class_instance.__doc__ else None
